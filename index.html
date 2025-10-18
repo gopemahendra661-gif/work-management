@@ -1,40 +1,783 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProWork Manager - Worker Management System</title>
+    <title>Coin Collector - Earn & Withdraw Money</title>
+    <script type="text/javascript">
+        // Adstera ad script
+        var adsterra = window.adsterra || {};
+        (function() {
+            var script = document.createElement('script');
+            script.async = true;
+            script.type = 'text/javascript';
+            script.src = '//adstera.com/script.js';
+            var firstScript = document.getElementsByTagName('script')[0];
+            firstScript.parentNode.insertBefore(script, firstScript);
+        })();
+    </script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #3498db;
-            --secondary: #2ecc71;
-            --danger: #e74c3c;
-            --warning: #f39c12;
-            --dark: #2c3e50;
-            --light: #ecf0f1;
-        }
-
-        body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f8f9fa;
-            color: #333;
-            line-height: 1.6;
         }
-
-        /* Header */
-        .header {
-            background: linear-gradient(135deg, var(--primary), #2980b9);
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
             color: white;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            min-height: 100vh;
+            padding: 20px;
         }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #fdbb2d;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #fdbb2d;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .stats-container {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-box {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #fdbb2d;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .game-board {
+            width: 100%;
+            height: 300px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 2px solid #fdbb2d;
+        }
+        
+        .coin {
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle at 30% 30%, #ffd700, #daa520);
+            border-radius: 50%;
+            position: absolute;
+            box-shadow: 0 0 10px gold;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        
+        .coin:hover {
+            transform: scale(1.1);
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(to right, #fdbb2d, #ff8c00);
+            color: #1a1a1a;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        .ad-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px dashed #fdbb2d;
+        }
+        
+        .ad-placeholder {
+            height: 100px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+            font-style: italic;
+        }
+        
+        .shop {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .shop h2 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #fdbb2d;
+        }
+        
+        .shop-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .shop-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .shop-item:hover {
+            background: rgba(253, 187, 45, 0.3);
+            transform: translateY(-5px);
+        }
+        
+        .withdrawal-section {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .withdrawal-section h2 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #fdbb2d;
+        }
+        
+        .withdrawal-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .withdrawal-option {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .withdrawal-option:hover {
+            background: rgba(253, 187, 45, 0.3);
+        }
+        
+        .withdrawal-option h3 {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .withdrawal-form {
+            display: none;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .withdrawal-form.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #fdbb2d;
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        .withdrawal-info {
+            background: rgba(253, 187, 45, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            transform: translateX(150%);
+            transition: transform 0.5s;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .ad-banner {
+            width: 100%;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .ad-label {
+            font-size: 0.8rem;
+            color: #fdbb2d;
+            margin-bottom: 5px;
+        }
+        
+        @media (max-width: 600px) {
+            .stats-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .withdrawal-options {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Coin Collector</h1>
+            <p>Collect coins, watch Adstera ads, and withdraw real money!</p>
+        </header>
+        
+        <!-- Top Adstera Banner Ad -->
+        <div class="ad-banner">
+            <div class="ad-label">Advertisement</div>
+            <div id="adsterra-banner-top"></div>
+        </div>
+        
+        <div class="stats-container">
+            <div class="stat-box">
+                <div class="stat-label">Coins</div>
+                <div class="stat-value" id="coins">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Total Earnings</div>
+                <div class="stat-value" id="total-earnings">$0.00</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Level</div>
+                <div class="stat-value" id="level">1</div>
+            </div>
+        </div>
+        
+        <div class="game-area">
+            <div class="game-board" id="game-board">
+                <!-- Coins will be generated here -->
+            </div>
+            
+            <div class="controls">
+                <button id="start-btn">Start Game</button>
+                <button id="watch-ad-btn">Watch Ad for 50 Coins</button>
+                <button id="upgrade-btn">Upgrade (100 Coins)</button>
+            </div>
+        </div>
+        
+        <!-- Middle Adstera Banner Ad -->
+        <div class="ad-banner">
+            <div class="ad-label">Advertisement</div>
+            <div id="adsterra-banner-middle"></div>
+        </div>
+        
+        <div class="ad-container">
+            <h3>Adstera Video Ad</h3>
+            <div class="ad-placeholder" id="adsterra-video">
+                [Adsterra Video Ad - Watch to earn coins]
+            </div>
+            <p>Watch Adsterra ads to earn more coins!</p>
+        </div>
+        
+        <div class="shop">
+            <h2>Shop</h2>
+            <div class="shop-items">
+                <div class="shop-item" data-cost="200">
+                    <div>💰</div>
+                    <div>Coin Multiplier</div>
+                    <div>200 Coins</div>
+                </div>
+                <div class="shop-item" data-cost="500">
+                    <div>⚡</div>
+                    <div>Speed Boost</div>
+                    <div>500 Coins</div>
+                </div>
+                <div class="shop-item" data-cost="1000">
+                    <div>👑</div>
+                    <div>Premium Account</div>
+                    <div>1000 Coins</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Withdrawal Section -->
+        <div class="withdrawal-section">
+            <h2>Withdraw Your Earnings</h2>
+            <div class="withdrawal-options">
+                <div class="withdrawal-option" id="gmail-option">
+                    <h3>📧 Withdraw via Gmail</h3>
+                    <p>Send withdrawal request directly to our email</p>
+                    <div class="withdrawal-form" id="gmail-form">
+                        <div class="form-group">
+                            <label for="gmail-email">Your Gmail Address</label>
+                            <input type="email" id="gmail-email" placeholder="your.email@gmail.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="gmail-amount">Withdrawal Amount ($)</label>
+                            <input type="number" id="gmail-amount" min="1" max="100" placeholder="Minimum $1">
+                        </div>
+                        <div class="form-group">
+                            <label for="gmail-message">Additional Message (Optional)</label>
+                            <textarea id="gmail-message" rows="3" placeholder="Any additional information..."></textarea>
+                        </div>
+                        <button id="submit-gmail">Send Withdrawal Request</button>
+                    </div>
+                </div>
+                
+                <div class="withdrawal-option" id="google-form-option">
+                    <h3>📋 Withdraw via Google Form</h3>
+                    <p>Fill out our Google Form for withdrawal</p>
+                    <div class="withdrawal-form" id="google-form-form">
+                        <div class="form-group">
+                            <label for="form-name">Full Name</label>
+                            <input type="text" id="form-name" placeholder="Your full name">
+                        </div>
+                        <div class="form-group">
+                            <label for="form-email">Email Address</label>
+                            <input type="email" id="form-email" placeholder="your.email@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="form-amount">Withdrawal Amount ($)</label>
+                            <input type="number" id="form-amount" min="1" max="100" placeholder="Minimum $1">
+                        </div>
+                        <div class="form-group">
+                            <label for="form-payment">Payment Method</label>
+                            <select id="form-payment" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #fdbb2d; background: rgba(255, 255, 255, 0.9);">
+                                <option value="">Select payment method</option>
+                                <option value="paypal">PayPal</option>
+                                <option value="bank">Bank Transfer</option>
+                                <option value="upi">UPI (India)</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <button id="submit-google-form">Open Google Form</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="withdrawal-info">
+                <h4>Withdrawal Information:</h4>
+                <ul>
+                    <li>Minimum withdrawal amount: $1.00</li>
+                    <li>Withdrawal processing time: 3-5 business days</li>
+                    <li>Make sure you have at least 1000 coins to withdraw</li>
+                    <li>All withdrawals are subject to verification</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Bottom Adstera Banner Ad -->
+        <div class="ad-banner">
+            <div class="ad-label">Advertisement</div>
+            <div id="adsterra-banner-bottom"></div>
+        </div>
+        
+        <footer>
+            <p>This game uses Adstera ads. Withdrawals are processed manually after verification.</p>
+        </footer>
+    </div>
+    
+    <div class="notification" id="notification">
+        <span id="notification-text">Notification message</span>
+    </div>
 
+    <script>
+        // Game state
+        let coins = 0;
+        let totalEarnings = 0;
+        let level = 1;
+        let gameActive = false;
+        let coinsPerClick = 1;
+        let coinValue = 0.001; // Each coin is worth $0.001
+        
+        // DOM elements
+        const coinsElement = document.getElementById('coins');
+        const totalEarningsElement = document.getElementById('total-earnings');
+        const levelElement = document.getElementById('level');
+        const gameBoard = document.getElementById('game-board');
+        const startBtn = document.getElementById('start-btn');
+        const watchAdBtn = document.getElementById('watch-ad-btn');
+        const upgradeBtn = document.getElementById('upgrade-btn');
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notification-text');
+        const shopItems = document.querySelectorAll('.shop-item');
+        
+        // Withdrawal elements
+        const gmailOption = document.getElementById('gmail-option');
+        const googleFormOption = document.getElementById('google-form-option');
+        const gmailForm = document.getElementById('gmail-form');
+        const googleFormForm = document.getElementById('google-form-form');
+        const submitGmail = document.getElementById('submit-gmail');
+        const submitGoogleForm = document.getElementById('submit-google-form');
+        
+        // Initialize Adstera ads
+        function initializeAdsteraAds() {
+            // Banner ad at the top
+            if (typeof adsterra !== 'undefined') {
+                adsterra.banner({
+                    id: 'adsterra-banner-top',
+                    width: 728,
+                    height: 90
+                });
+                
+                // Banner ad in the middle
+                adsterra.banner({
+                    id: 'adsterra-banner-middle',
+                    width: 728,
+                    height: 90
+                });
+                
+                // Banner ad at the bottom
+                adsterra.banner({
+                    id: 'adsterra-banner-bottom',
+                    width: 728,
+                    height: 90
+                });
+                
+                // Video ad
+                adsterra.video({
+                    id: 'adsterra-video',
+                    width: 300,
+                    height: 250
+                });
+            } else {
+                console.log('Adsterra not loaded yet');
+                // Retry after a delay
+                setTimeout(initializeAdsteraAds, 1000);
+            }
+        }
+        
+        // Initialize game
+        function initGame() {
+            updateUI();
+            
+            // Initialize ads after a short delay
+            setTimeout(initializeAdsteraAds, 500);
+            
+            // Event listeners
+            startBtn.addEventListener('click', startGame);
+            watchAdBtn.addEventListener('click', watchAd);
+            upgradeBtn.addEventListener('click', upgrade);
+            
+            // Shop items
+            shopItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const cost = parseInt(item.getAttribute('data-cost'));
+                    if (coins >= cost) {
+                        coins -= cost;
+                        showNotification(`Purchased ${item.children[1].textContent}!`);
+                        updateUI();
+                    } else {
+                        showNotification('Not enough coins!');
+                    }
+                });
+            });
+            
+            // Withdrawal options
+            gmailOption.addEventListener('click', () => {
+                gmailForm.classList.toggle('active');
+                googleFormForm.classList.remove('active');
+            });
+            
+            googleFormOption.addEventListener('click', () => {
+                googleFormForm.classList.toggle('active');
+                gmailForm.classList.remove('active');
+            });
+            
+            // Gmail withdrawal
+            submitGmail.addEventListener('click', () => {
+                const email = document.getElementById('gmail-email').value;
+                const amount = document.getElementById('gmail-amount').value;
+                const message = document.getElementById('gmail-message').value;
+                
+                if (!email || !amount) {
+                    showNotification('Please fill in all required fields');
+                    return;
+                }
+                
+                if (totalEarnings < parseFloat(amount)) {
+                    showNotification('Insufficient balance for withdrawal');
+                    return;
+                }
+                
+                if (parseFloat(amount) < 1) {
+                    showNotification('Minimum withdrawal amount is $1');
+                    return;
+                }
+                
+                // Simulate sending email
+                const subject = `Withdrawal Request - $${amount}`;
+                const body = `Email: ${email}%0D%0AAmount: $${amount}%0D%0AMessage: ${message}`;
+                const mailtoLink = `mailto:your-withdrawal-email@example.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                
+                window.location.href = mailtoLink;
+                showNotification('Gmail opened with withdrawal details. Please send the email to complete your request.');
+            });
+            
+            // Google Form withdrawal
+            submitGoogleForm.addEventListener('click', () => {
+                const name = document.getElementById('form-name').value;
+                const email = document.getElementById('form-email').value;
+                const amount = document.getElementById('form-amount').value;
+                const payment = document.getElementById('form-payment').value;
+                
+                if (!name || !email || !amount || !payment) {
+                    showNotification('Please fill in all required fields');
+                    return;
+                }
+                
+                if (totalEarnings < parseFloat(amount)) {
+                    showNotification('Insufficient balance for withdrawal');
+                    return;
+                }
+                
+                if (parseFloat(amount) < 1) {
+                    showNotification('Minimum withdrawal amount is $1');
+                    return;
+                }
+                
+                // Replace with your actual Google Form URL
+                const googleFormUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSfEXAMPLE/viewform';
+                window.open(googleFormUrl, '_blank');
+                showNotification('Google Form opened in new tab. Please fill it out to complete your withdrawal request.');
+            });
+        }
+        
+        // Start the game
+        function startGame() {
+            if (gameActive) return;
+            
+            gameActive = true;
+            startBtn.disabled = true;
+            startBtn.textContent = 'Game Running...';
+            
+            // Generate coins
+            generateCoins();
+            
+            // Game runs for 30 seconds
+            setTimeout(() => {
+                endGame();
+            }, 30000);
+        }
+        
+        // End the game
+        function endGame() {
+            gameActive = false;
+            startBtn.disabled = false;
+            startBtn.textContent = 'Start Game';
+            
+            // Clear the game board
+            gameBoard.innerHTML = '';
+            
+            // Level up if enough coins collected
+            if (coins >= level * 50) {
+                level++;
+                showNotification(`Level Up! You are now level ${level}`);
+            }
+            
+            updateUI();
+        }
+        
+        // Generate coins on the game board
+        function generateCoins() {
+            if (!gameActive) return;
+            
+            // Clear previous coins
+            gameBoard.innerHTML = '';
+            
+            // Generate 10 coins at random positions
+            for (let i = 0; i < 10; i++) {
+                const coin = document.createElement('div');
+                coin.className = 'coin';
+                
+                // Random position
+                const x = Math.random() * (gameBoard.offsetWidth - 40);
+                const y = Math.random() * (gameBoard.offsetHeight - 40);
+                
+                coin.style.left = `${x}px`;
+                coin.style.top = `${y}px`;
+                
+                // Click event to collect coin
+                coin.addEventListener('click', () => {
+                    collectCoin(coin);
+                });
+                
+                gameBoard.appendChild(coin);
+            }
+            
+            // Generate more coins after a delay
+            setTimeout(generateCoins, 2000);
+        }
+        
+        // Collect a coin
+        function collectCoin(coinElement) {
+            if (!gameActive) return;
+            
+            // Remove the coin
+            coinElement.remove();
+            
+            // Add coins
+            coins += coinsPerClick;
+            
+            // Update total earnings
+            totalEarnings = coins * coinValue;
+            
+            // Update UI
+            updateUI();
+            
+            // Show collection effect
+            showNotification(`+${coinsPerClick} Coin${coinsPerClick > 1 ? 's' : ''}!`);
+        }
+        
+        // Watch ad for coins
+        function watchAd() {
+            // Show Adsterra video ad
+            showNotification('Adsterra ad playing...');
+            
+            // In a real implementation, this would trigger an Adsterra video ad
+            // For demo purposes, we'll simulate the ad completion
+            
+            // After ad completion (simulated with timeout)
+            setTimeout(() => {
+                coins += 50;
+                updateUI();
+                showNotification('Adsterra ad completed! +50 Coins');
+            }, 5000);
+        }
+        
+        // Upgrade coins per click
+        function upgrade() {
+            if (coins >= 100) {
+                coins -= 100;
+                coinsPerClick++;
+                updateUI();
+                showNotification('Upgraded! You now collect more coins per click');
+            } else {
+                showNotification('Not enough coins for upgrade!');
+            }
+        }
+        
+        // Update UI elements
+        function updateUI() {
+            coinsElement.textContent = coins;
+            totalEarningsElement.textContent = `$${totalEarnings.toFixed(2)}`;
+            levelElement.textContent = level;
+        }
+        
+        // Show notification
+        function showNotification(message) {
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Initialize the game when page loads
+        window.onload = initGame;
+    </script>
+</body>
+</html>
         .header-content {
             display: flex;
             justify-content: space-between;
